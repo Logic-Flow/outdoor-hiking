@@ -4,6 +4,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "baseUrl": "./",
+    "resolveJsonModule": true,
     "paths": {
       "@@/*": [".dumi/tmp/*"]
     }

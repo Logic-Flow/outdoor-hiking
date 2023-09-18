@@ -14,5 +14,6 @@
   "devDependencies": {
     "dumi": "^2.2.7",
     "prettier": "^3.0.3"
-  }
+  },
+  "repository": "https://github.com/didi/LogicFlow"
 }
