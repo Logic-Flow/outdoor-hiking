@@ -1,7 +1,10 @@
 import { defineConfig } from 'dumi';
-import { repository } from './package.json';
+import { repository, version } from './package.json';
 
 export default defineConfig({
+  define: {
+    'process.env.DUMI_VERSION': version,
+  },
   themeConfig: {
     name: 'LogicFlow',
     logo: '/logo.png',
