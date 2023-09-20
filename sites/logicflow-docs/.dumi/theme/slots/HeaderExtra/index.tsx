@@ -16,7 +16,6 @@ const HeaderExtra: FC = () => {
         <option value={process.env.DUMI_VERSION}>
           {process.env.DUMI_VERSION}
         </option>
-        <option value="1.2.x">1.2.x</option>
         <option value="1.1.x">1.1.x</option>
         <option value="1.0.x">1.0.x</option>
         <option value="0.7.x">0.7.x</option>
