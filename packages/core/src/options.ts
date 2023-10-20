@@ -1,7 +1,9 @@
 import { assign } from 'lodash'
 import LogicFlow from './LogicFlow'
+import { Keyboard } from './common'
 import { GraphModel } from './model'
 import { OverlapMode } from './constant'
+import { VNode } from 'preact'
 
 export namespace Options {
   import Extension = LogicFlow.Extension
@@ -45,8 +47,14 @@ export namespace Options {
   export type EdgeGeneratorType = (
     sourceNode: LogicFlow.NodeData,
     targetNode: LogicFlow.NodeData,
-    currentEdge?: Partial<LogicFlow.EdgeData>,
+    currentEdge?: Partial<LogicFlow.EdgeConfig>,
   ) => any
+
+  export interface CustomAnchorLineProps {
+    sourcePoint: LogicFlow.Point
+    targetPoint: LogicFlow.Point
+    [key: string]: any
+  }
 
   export interface GuardsConfig {
     beforeClone?: (data: NodeData | GraphConfigData) => boolean
@@ -62,14 +70,20 @@ export namespace Options {
     grid?: number | boolean | GridOptions
 
     partial?: boolean
-    // keyboard?: KeyboardConfig;
+    keyboard?: Keyboard.KeyboardDef
     style?: Partial<LogicFlow.Theme> // 主题配置
     edgeType?: EdgeType
     isSilentMode?: boolean
     stopScrollGraph?: boolean
     stopZoomGraph?: boolean
+    stopMoveGraph?:
+      | boolean
+      | 'vertical'
+      | 'horizontal'
+      | [number, number, number, number]
     animation?: boolean | Partial<AnimationConfig>
     history?: boolean
+    outline?: boolean
     snapline?: boolean
     textEdit?: boolean
 
@@ -83,6 +97,8 @@ export namespace Options {
 
     idGenerator?: (type?: string) => string
     edgeGenerator?: EdgeGeneratorType
+
+    customTrajectory?: (props: CustomAnchorLineProps) => VNode
   }
 
   export interface ManualBooleans {}
@@ -134,6 +150,8 @@ export namespace Options {
     background: false,
     grid: false,
     textEdit: true,
+    snapline: true,
+    outline: false,
     disabledTools: [],
   }
 }

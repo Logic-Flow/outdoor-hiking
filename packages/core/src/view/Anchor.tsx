@@ -4,12 +4,11 @@ import { BaseNode, IBaseNodeProps, Circle, Line } from '.'
 import {
   createRaf,
   distance,
-  formatAnchorConnectValidateResult,
+  formatConnectValidateResult,
   getTargetNodeInfo,
-  IDragParams,
   RafInstance,
-  StepperDrag,
 } from '../util'
+import { IDragParams, StepperDrag } from '../common'
 import { BaseNodeModel, GraphModel } from '../model'
 import { ElementState, EventType, OverlapMode } from '../constant'
 
@@ -71,7 +70,7 @@ export class Anchor extends Component<IAnchorProps, IAnchorState> {
     })
   }
 
-  checkEnd = (event: MouseEvent | null) => {
+  checkEnd = (event: MouseEvent | null | undefined) => {
     const { graphModel, nodeModel, anchorData } = this.props
     const { x, y, id } = anchorData
 
@@ -165,11 +164,11 @@ export class Anchor extends Component<IAnchorProps, IAnchorState> {
         )
         this.sourceRuleResults.set(
           targetInfoId,
-          formatAnchorConnectValidateResult(sourceRuleResult),
+          formatConnectValidateResult(sourceRuleResult),
         )
         this.targetRuleResults.set(
           targetInfoId,
-          formatAnchorConnectValidateResult(targetRuleResult),
+          formatConnectValidateResult(targetRuleResult),
         )
       }
 
@@ -194,7 +193,7 @@ export class Anchor extends Component<IAnchorProps, IAnchorState> {
     }
   }
 
-  onDragStart = ({ event }: IDragParams) => {
+  onDragStart = ({ event }: Partial<IDragParams>) => {
     const { anchorData, nodeModel, graphModel } = this.props
     console.log('anchorData --->>>', anchorData)
     const { overlapMode } = graphModel
@@ -256,9 +255,6 @@ export class Anchor extends Component<IAnchorProps, IAnchorState> {
       })
       this.moveAnchorEnd(x1, y1)
 
-      console.log('nearBoundary', nearBoundary)
-      console.log('stopMoveGraph', stopMoveGraph)
-      console.log('autoExpand', autoExpand)
       if (nearBoundary.length > 0 && !stopMoveGraph && autoExpand) {
         // TODO: 验证拖拽到到图边缘时的优化，以及 createRaf 方法功能是否 OK
         this.rafIns = createRaf(() => {
@@ -281,7 +277,7 @@ export class Anchor extends Component<IAnchorProps, IAnchorState> {
       })
     }
   }
-  onDragEnd = ({ event }: IDragParams) => {
+  onDragEnd = ({ event }: Partial<IDragParams>) => {
     if (this.rafIns) {
       this.rafIns.stop()
     }
@@ -326,6 +322,13 @@ export class Anchor extends Component<IAnchorProps, IAnchorState> {
     )
   }
 
+  get customTrajectory() {
+    const {
+      graphModel: { customTrajectory },
+    } = this.props
+    return customTrajectory
+  }
+
   isShowLine() {
     const { startX, startY, endX, endY } = this.state
     const v = distance(startX, startY, endX, endY)
@@ -351,16 +354,26 @@ export class Anchor extends Component<IAnchorProps, IAnchorState> {
         >
           {this.getAnchorShape()}
         </g>
-        {this.isShowLine() && (
-          <Line
-            x1={startX}
-            y1={startY}
-            x2={endX}
-            y2={endY}
-            {...edgeStyle}
-            pointer-events="none"
-          />
-        )}
+        {this.isShowLine() &&
+          (this.customTrajectory ? (
+            this.customTrajectory({
+              sourcePoint: { x: startX, y: startY },
+              targetPoint: {
+                x: endX,
+                y: endY,
+              },
+              ...edgeStyle,
+            })
+          ) : (
+            <Line
+              x1={startX}
+              y1={startY}
+              x2={endX}
+              y2={endY}
+              {...edgeStyle}
+              pointer-events="none"
+            />
+          ))}
       </g>
     )
   }

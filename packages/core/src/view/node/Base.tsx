@@ -5,14 +5,14 @@ import { LogicFlow } from '../../LogicFlow'
 import { ElementState, EventType, OverlapMode } from '../../constant'
 import { BaseNodeModel, GraphModel, Model } from '../../model'
 import {
-  IDragParams,
-  isIe,
   createRaf,
+  isIe,
   isMultipleSelect,
   RafInstance,
   snapToGrid,
-  StepperDrag,
 } from '../../util'
+import { IDragParams, StepperDrag, TranslateMatrix } from '../../common'
+import RotateControlPoint from '../Rotate'
 
 export type IBaseNodeProps = {
   model: BaseNodeModel
@@ -52,8 +52,8 @@ export abstract class BaseNode<P extends IBaseNodeProps> extends Component<
     })
   }
   abstract getShape(): h.JSX.Element
-  getAnchorShape(anchorData?: Model.AnchorConfig): h.JSX.Element | null {
-    console.log('getAnchorShape params ->:', anchorData)
+  getAnchorShape(_anchorData?: Model.AnchorConfig): h.JSX.Element | null {
+    console.log(_anchorData)
     return null
   }
   getAnchors() {
@@ -81,11 +81,26 @@ export abstract class BaseNode<P extends IBaseNodeProps> extends Component<
     }
     return []
   }
+  getRotateControl() {
+    const { model, graphModel } = this.props
+    const { isSelected, isHittable, enableRotate, isHovered } = model
+    const style = model.getRotateControlStyle()
+    if (isHittable && (isSelected || isHovered) && enableRotate) {
+      return (
+        <RotateControlPoint
+          graphModel={graphModel}
+          nodeModel={model}
+          eventCenter={graphModel.eventCenter}
+          style={style}
+        />
+      )
+    }
+  }
   getText() {
     const { model, graphModel } = this.props
     // 文本编辑状态下，显示编辑框，不显示文本。
     if (model.state === ElementState.TEXT_EDIT) {
-      return ''
+      return null
     }
     if (model.text) {
       const { editConfigModel } = graphModel
@@ -131,7 +146,7 @@ export abstract class BaseNode<P extends IBaseNodeProps> extends Component<
     return className
   }
 
-  onDragStart = ({ event }: IDragParams) => {
+  onDragStart = ({ event }: Partial<IDragParams>) => {
     const { model, graphModel } = this.props
     if (event) {
       const {
@@ -207,7 +222,10 @@ export abstract class BaseNode<P extends IBaseNodeProps> extends Component<
       } else if (rbY > height) {
         nearBoundary = [0, -size]
       }
-
+      model.transform = new TranslateMatrix(-x, -y)
+        .rotate(model.rotate)
+        .translate(x, y)
+        .toString()
       let moveNodes = map(selectNodes, (node) => node.id)
       // 未选中的节点也可以拖动
       if (moveNodes.indexOf(model.id) === -1) {
@@ -367,19 +385,21 @@ export abstract class BaseNode<P extends IBaseNodeProps> extends Component<
 
   render(): h.JSX.Element {
     const {
-      model: { isHittable, draggable },
+      model: { isHittable, draggable, transform },
       graphModel: {
         gridSize,
         transformModel: { SCALE_X },
-        editConfigModel: { hideAnchors, adjustNodePosition },
+        editConfigModel: { hideAnchors, adjustNodePosition, allowRotation },
       },
     } = this.props
-
     const nodeShapeInner = (
       <g className="lf-node-content">
-        {this.getShape()}
-        {this.getText()}
-        {hideAnchors ? null : this.getAnchors()}
+        <g transform={transform}>
+          {this.getShape()}
+          {this.getText()}
+          {allowRotation && this.getRotateControl()}
+        </g>
+        {!hideAnchors && this.getAnchors()}
       </g>
     )
 

@@ -34,6 +34,7 @@ import {
   TransformModel,
 } from '.'
 import { LogicFlow } from '../LogicFlow'
+import { HistoryData } from '../common'
 import EventEmitter from '../event/eventEmitter'
 import { Options as LFOptions } from '../options'
 import { closestPointOnPolyline } from '../algorithm'
@@ -74,6 +75,11 @@ export class GraphModel {
    */
   nodeMoveRules: Model.NodeMoveRule[] = []
 
+  /**
+   * 获取自定义连线轨迹
+   */
+  customTrajectory: LFOptions.Definition['customTrajectory']
+
   // 在图上操作创建边时，默认使用的边类型
   @observable edgeType: string
   // 当前图上所有节点的 model
@@ -113,6 +119,7 @@ export class GraphModel {
       animation,
       idGenerator,
       edgeGenerator,
+      customTrajectory,
     } = options
 
     this.rootEl = container
@@ -131,11 +138,12 @@ export class GraphModel {
 
     this.eventCenter = new EventEmitter()
     this.editConfigModel = new EditConfigModel(options)
-    this.transformModel = new TransformModel(this.eventCenter)
+    this.transformModel = new TransformModel(this.eventCenter, options)
 
     this.flowId = createUuid()
     this.idGenerator = idGenerator
     this.edgeGenerator = createEdgeGenerator(this, edgeGenerator)
+    this.customTrajectory = customTrajectory
   }
 
   @computed
@@ -522,8 +530,8 @@ export class GraphModel {
    * 获取画布数据
    */
   modelToGraphData(): LogicFlow.GraphConfigData {
-    const nodes: LogicFlow.NodeConfig[] = []
-    const edges: LogicFlow.EdgeConfig[] = []
+    const nodes: LogicFlow.NodeData[] = []
+    const edges: LogicFlow.EdgeData[] = []
 
     forEach(this.nodes, (node) => {
       const data = node.getData()
@@ -547,7 +555,7 @@ export class GraphModel {
   /**
    * 用户 history 记录的数据，忽略拖拽过程中的数据变更
    */
-  modelToHistoryData() {
+  modelToHistoryData(): false | HistoryData {
     let isNodeDragging = false
     const nodes = []
     for (let i = 0; i < this.nodes.length; i++) {
@@ -1261,7 +1269,7 @@ export class GraphModel {
    * @param style 新传入的主题样式
    */
   @action
-  setTheme(style: LogicFlow.Theme) {
+  setTheme(style: Partial<LogicFlow.Theme>) {
     this.theme = updateTheme({ ...this.theme, ...style })
   }
 

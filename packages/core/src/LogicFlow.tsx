@@ -12,12 +12,14 @@ import {
   SnaplineModel,
 } from './model'
 import { snaplineTool, Tool } from './tool'
-import { formatRawData } from './util'
+import { formatRawData, initDefaultShortcuts } from './util'
+import { History, Keyboard } from './common'
 import { Dnd } from './view/behavior'
 import { ElementType, EventType } from './constant'
 import Graph from './view/Graph'
 import * as _View from './view'
 import * as _Model from './model'
+import { CallbackType, EventArgs } from './event/eventEmitter'
 
 import Extension = LogicFlow.Extension
 import NodeConfig = LogicFlow.NodeConfig
@@ -32,12 +34,13 @@ import PointTuple = LogicFlow.PointTuple
 import EdgeData = LogicFlow.EdgeData
 import EdgeType = Options.EdgeType
 import EdgeConfig = LogicFlow.EdgeConfig
-import { CallbackType, EventArgs } from './event/eventEmitter'
 
 export class LogicFlow {
   container: HTMLElement
   graphModel: GraphModel
   viewMap: Map<string, Component> = new Map()
+  history: History
+  keyboard: Keyboard
   dnd: Dnd
   tool: Tool
   snaplineModel?: SnaplineModel
@@ -93,13 +96,22 @@ export class LogicFlow {
       container: this.container,
     })
 
+    this.plugins = options.plugins
     this.tool = new Tool(this)
     this.dnd = new Dnd({ lf: this })
-    if (!options.snapline) {
+    this.history = new History(this.graphModel.eventCenter)
+    this.keyboard = new Keyboard({ lf: this, keyboard: options.keyboard })
+
+    if (options.snapline !== false) {
       this.snaplineModel = new SnaplineModel(this.graphModel)
       snaplineTool(this.graphModel.eventCenter, this.snaplineModel)
     }
-    this.plugins = options.plugins
+    if (!this.options.isSilentMode) {
+      // 先初始化默认内置快捷键，自定义快捷键可以覆盖默认快捷键
+      initDefaultShortcuts(this, this.graphModel)
+      // 然后再初始化自定义快捷键，自定义快捷键可覆盖默认快捷键。
+      this.keyboard.initShortcuts()
+    }
 
     this.defaultRegister()
   }
@@ -267,6 +279,11 @@ export class LogicFlow {
         type: 'polyline',
         view: _View.PolylineEdge,
         model: _Model.PolylineEdgeModel,
+      },
+      {
+        type: 'bezier',
+        view: _View.BezierEdge,
+        model: _Model.BezierEdgeModel,
       },
     ]
     forEach(defaultElements, (element) => {
@@ -785,7 +802,7 @@ export class LogicFlow {
    * 设置图主题样式，用户可自定义部分主题
    * @param style Theme
    */
-  setTheme(style: LogicFlow.Theme) {
+  setTheme(style: Partial<LogicFlow.Theme>) {
     this.graphModel.setTheme(style)
   }
 
@@ -882,8 +899,26 @@ export class LogicFlow {
   /*********************************************************
    * History 相关方法
    ********************************************************/
-  undo() {}
-  redo() {}
+  undo() {
+    if (!this.history.undoAble()) return
+
+    // formatRawData 兼容 vue 数据
+    const graphData = formatRawData(this.history.undo())
+    this.clearSelectElements()
+    if (graphData) {
+      this.graphModel.graphDataToModel(graphData)
+    }
+  }
+  redo() {
+    if (!this.history.redoAble()) return
+
+    // formatRawData 兼容 vue 数据
+    const graphData = formatRawData(this.history.redo())
+    this.clearSelectElements()
+    if (graphData) {
+      this.graphModel.graphDataToModel(graphData)
+    }
+  }
 
   /**
    * 放大缩小图形
@@ -1052,7 +1087,7 @@ export class LogicFlow {
   renderRawData(graphRawData: any) {
     this.graphModel.graphDataToModel(formatRawData(graphRawData))
     if (this.options.history !== false) {
-      // this.history.watch(this.graphModel);
+      this.history.watch(this.graphModel)
     }
     render(
       <Graph
@@ -1084,8 +1119,8 @@ export namespace LogicFlow {
   export interface Options extends LFOptions.Common {}
 
   export interface GraphConfigData {
-    nodes: NodeConfig[]
-    edges: EdgeConfig[]
+    nodes: NodeData[]
+    edges: EdgeData[]
   }
 
   export type AttributesType = Record<string, unknown>
@@ -1101,7 +1136,7 @@ export namespace LogicFlow {
   }
   export type Point = {
     id?: string
-    [key: string]: unknown
+    [key: string]: any
   } & Position
   export type PointTuple = [number, number]
   export interface LineSegment {
@@ -1117,7 +1152,7 @@ export namespace LogicFlow {
     x: number
     y: number
     z: 0
-    [key: string]: unknown
+    [key: string]: any
   }
   export type RectSize = {
     width: number
@@ -1158,10 +1193,13 @@ export namespace LogicFlow {
     zIndex?: number
     properties?: Record<string, unknown>
     virtual?: boolean // 是否虚拟节点
+    rotate?: number
+    [key: string]: any
   }
 
   export interface NodeData extends NodeConfig {
     id: string
+    text?: TextConfig
     [key: string]: unknown
   }
 
@@ -1190,6 +1228,7 @@ export namespace LogicFlow {
   export interface EdgeData extends EdgeConfig {
     id: string
     type: string
+    text?: TextConfig
     [key: string]: unknown
   }
 
@@ -1238,6 +1277,7 @@ export namespace LogicFlow {
    */
   export type DashArray = string
   export type CommonTheme = {
+    path?: string
     fill?: Color // 填充颜色
     stroke?: Color // 边框颜色
     strokeWidth?: number // 边框宽度 TODO: svg 实际可赋值类型：NumberOrPercent
@@ -1296,7 +1336,7 @@ export namespace LogicFlow {
   export type AnchorTheme = {
     r?: number
     hover?: {
-      r: number
+      r?: number
     } & CommonTheme
   } & CommonTheme
 
@@ -1430,6 +1470,7 @@ export namespace LogicFlow {
      */
     anchor: AnchorTheme // 锚点样式
     arrow: ArrowTheme // 边上箭头的样式
+    allowRotation: CommonTheme // 旋转控制点样式
     snapline: EdgeTheme // 对齐线样式
     /**
      * REMIND: 当开启了跳转边的起点和终点(adjustEdgeStartAndEnd:true)后

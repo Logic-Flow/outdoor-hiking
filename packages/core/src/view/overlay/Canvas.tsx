@@ -2,8 +2,8 @@ import { observer } from 'mobx-preact'
 import { createElement as h, Component } from 'preact/compat'
 import { Dnd } from '../behavior'
 import { GraphModel } from '../../model'
-import { IDragParams, StepperDrag } from '../../util'
 import { EventType } from '../../constant'
+import { IDragParams, StepperDrag } from '../../common'
 
 export type ICanvasProps = {
   graphModel: GraphModel
@@ -44,7 +44,9 @@ export const Canvas = observer(
       const {
         graphModel: { transformModel, editConfigModel },
       } = this.props
-      if (editConfigModel.stopMoveGraph) return
+      if (editConfigModel.stopMoveGraph === true) {
+        return
+      }
       if (deltaX && deltaY) {
         transformModel.translate(deltaX, deltaY)
       }
@@ -138,7 +140,7 @@ export const Canvas = observer(
       const target = e.target as HTMLElement
       const isFrozen = !adjustEdge && !adjustNodePosition
       if (target.getAttribute('name') === 'canvas-overlay' || isFrozen) {
-        if (!stopMoveGraph) {
+        if (stopMoveGraph !== true) {
           this.stepperDrag.setStep(gridSize * SCALE_X)
           this.stepperDrag.handleMouseDown(e)
         } else {

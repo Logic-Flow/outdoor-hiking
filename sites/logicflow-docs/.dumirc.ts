@@ -35,4 +35,8 @@ export default defineConfig({
   theme: {
     '@c-primary': '#2d71fa',
   },
+  versions: {
+    '2.x': 'https://x6.antv.antgroup.com',
+    '1.x': 'https://x6.antv.vision',
+  },
 });

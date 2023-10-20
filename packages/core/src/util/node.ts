@@ -13,6 +13,7 @@ import Point = LogicFlow.Point
 import Direction = LogicFlow.Direction
 import NodeBBox = BaseNodeModel.NodeBBox
 import RadiusCircleInfo = LogicFlow.RadiusCircleInfo
+import ConnectRuleResult = LogicFlow.ConnectRuleResult
 
 /*********************************************************
  * Node 节点工具函数
@@ -21,7 +22,17 @@ import RadiusCircleInfo = LogicFlow.RadiusCircleInfo
 export const pickNodeConfig = (
   data: LogicFlow.NodeConfig | LogicFlow.NodeData,
 ): LogicFlow.NodeConfig => {
-  return pick(data, ['id', 'type', 'x', 'y', 'text', 'properties', 'virtual'])
+  // @ts-ignore
+  return pick(data, [
+    'id',
+    'type',
+    'x',
+    'y',
+    'text',
+    'properties',
+    'virtual',
+    'rotate',
+  ])
 }
 
 // 判断点与 BBox 中心点连线的方向：返回水平 or 垂直
@@ -387,7 +398,7 @@ export type TargetNodeInfo = {
 export const getTargetNodeInfo = (
   position: LogicFlow.Point,
   graphModel: GraphModel,
-): TargetNodeInfo => {
+): TargetNodeInfo | undefined => {
   const { nodes } = graphModel
   let nodeInfo: TargetNodeInfo | undefined
   for (let i = 0; i < nodes.length; i++) {
@@ -408,7 +419,7 @@ export const getTargetNodeInfo = (
       }
     }
   }
-  return nodeInfo as TargetNodeInfo
+  return nodeInfo
 }
 
 /*********************************************************
@@ -492,9 +503,10 @@ export const getClosestAnchor = (
   return undefined
 }
 
-export const formatAnchorConnectValidateResult = (
-  result: LogicFlow.ConnectRuleResult,
-): LogicFlow.ConnectRuleResult => {
+// 格式化边校验信息
+export const formatConnectValidateResult = (
+  result: ConnectRuleResult | boolean,
+): ConnectRuleResult => {
   if (typeof result !== 'object') {
     return {
       isAllPass: result,
