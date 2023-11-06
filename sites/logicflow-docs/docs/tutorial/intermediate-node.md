@@ -64,14 +64,7 @@ class MovableNodeModel extends RectNodeModel {
   initNodeData(data) {
     super.initNodeData(data);
     this.moveRules.push((model, deltaX, deltaY) => {
-      // 不允许移动到坐标为负值的地方
-      if (
-        model.x + deltaX - this.width / 2 < 0 ||
-        model.y + deltaY - this.height / 2 < 0
-      ) {
-        return false;
-      }
-      return true;
+      // 需要处理的内容
     });
   }
 }
@@ -91,80 +84,16 @@ lf.graphModel.addNodeMoveRules((model, deltaX, deltaY) => {
 
 <code id="node-movable" src="../../src/tutorial/intermediate/node/movable/index"></code>
 
-<!--
-<iframe src="https://codesandbox.io/embed/exciting-galileo-18sm6?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="exciting-galileo-18sm6"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe> -->
-
 ## 锚点
 
 对于各种基础类型节点，我们都内置了默认锚点。LogicFlow支持通过重写获取锚点的方法来实现自定义节点的锚点。
 
-```jsx | pure
-import { RectNode, RectNodeModel } from '@logicflow/core';
-
-class SquareModel extends RectNodeModel {
-  initNodeData(data) {
-    super.initNodeData(data);
-
-    const rule = {
-      message: "只允许从右边的锚点连出",
-      validate: (sourceNode, targetNode, sourceAnchor, targetAnchor) => {
-        return sourceAnchor.name === "right";
-      }
-    };
-    this.sourceRules.push(rule);
-  }
-  getAnchorStyle(anchorInfo) {
-    const style = super.getAnchorStyle(anchorInfo);
-    if (anchorInfo.type === 'left') {
-      style.fill = 'red'
-      style.hover.fill = 'transparent'
-      style.hover.stroke = 'transpanrent'
-      style.className = 'lf-hide-default'
-    } else {
-      style.fill = 'green'
-    }
-    return style;
-  }
-  getDefaultAnchor() {
-    const { width, height, x, y, id } = this; 
-    return [
-      {
-        x: x - width / 2,
-        y,
-        type: 'left',
-        edgeAddable: false, // 控制锚点是否可以从此锚点手动创建连线。默认为true。
-        id: `${id}_0`
-      },
-      {
-        x: x + width / 2,
-        y,
-        type: 'right',
-        id: `${id}_1`
-      },
-    ]
-  }
-}
-```
+<code id="node-sql" src="../../src/tutorial/intermediate/node/sql/index"></code>
 
 上面的示例中，我们自定义锚点的时候，不仅可以定义锚点的数量和位置，还可以给锚点加上任意属性。有了这些属性，我们可以再做很多额外的事情。例如，我们增加一个校验规则，只允许节点从右边连出，从左边连入；或者加个id, 在获取数据的时候保存当前连线从那个锚点连接到那个锚点。
 
 :::warning{title=注意}
 一定要确保锚点id唯一，否则可能会出现在连线规则校验不准确的问题。
-:::
-
-<iframe src="https://codesandbox.io/embed/logicflow-base15-ou2i0?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="logicflow-base15"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
-
-:::info{title=提示}
 在实际开发中，存在隐藏锚点的需求，可以参考github issue [如何隐藏锚点？](https://github.com/didi/LogicFlow/issues/454)，可以查看code sandbox [示例](https://codesandbox.io/s/reverent-haslett-dkb9n?file=/step_14_hideAnchor/index.js)
 :::
 
@@ -245,100 +174,15 @@ HTML节点示例
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 
-## REACT 节点
+## React 节点
 
 因为自定义html节点对外暴露的是一个DOM节点，所以你可以使用框架现有的能力来渲染节点。在react中，我们利用`reactDom`的`render`方法，将react组件渲染到dom节点上。
 
-```jsx | pure
-import { HtmlNodeModel, HtmlNode } from '@logicflow/core';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './uml.css';
+<code id="node-react-node" src="../../src/tutorial/intermediate/node/reactNode/index"></code>
 
-function Hello(props) {
-  return (
-    <>
-      <h1 className="box-title">title</h1>
-      <div className="box-content">
-        <p>{props.name}</p>
-        <p>{props.body}</p>
-        <p>content3</p>
-      </div>
-    </>
-  )
-}
+## Vue 节点
 
-class BoxxModel extends HtmlNodeModel {
-  setAttributes() {
-    this.text.editable = false;
-    const width = 200;
-    const height = 116;
-    this.width = width;
-    this.height = height;
-    this.anchorsOffset = [
-      [width / 2, 0],
-      [0, height / 2],
-      [-width / 2, 0],
-      [0, -height/2],
-    ]
-  }
-}
-class BoxxNode extends HtmlNode {
-  setHtml(rootEl: HTMLElement) {
-    const { properties } = this.props.model;
-    ReactDOM.render(<Hello name={properties.name} body={properties.body}/>, rootEl);
-  }
-}
-
-const boxx = {
-  type: 'boxx',
-  view: BoxxNode,
-  model: BoxxModel
-}
-
-export default boxx;
-```
-
-```jsx | pure
-// page.jsx
-
-import box from './box.tsx';
-export default function PageIndex() {
-  useEffect(() => {
-    const lf = new LogicFlow({
-      ...config,
-      container: document.querySelector('#graph_html') as HTMLElement
-    });
-    lf.register(box);
-    lf.render({
-      nodes: [
-        {
-          id: 11,
-          type: 'boxx',
-          x: 350,
-          y: 100,
-          properties: {
-            name: 'turbo',
-            body: 'hello'
-          }
-        },
-      ]
-    });
-    lf.on('node:click', ({ data}) => {
-      lf.setProperties(data.id, {
-        name: 'turbo',
-        body: Math.random()
-      })
-    });
-  }, []);
-
-  return (
-    <>
-      <div id="graph_html" className="viewport" />
-    </>
-  )
-}
-```
+TODO
 
 ## 外部通信
 

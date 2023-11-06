@@ -17,7 +17,7 @@ class CustomNodeModel extends RectNodeModel {
     }
     super.initNodeData(data);
     this.width = 500;
-    this.height = 300;
+    this.height = 200;
     this.isGroup = true;
     this.zIndex = -1;
     this.children = data.children;

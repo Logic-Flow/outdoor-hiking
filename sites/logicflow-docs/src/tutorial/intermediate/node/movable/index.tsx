@@ -1,11 +1,16 @@
 import React from 'react';
 import LogicFlow from '@logicflow/core';
 import '@logicflow/core/es/index.css';
-// import customNode from "./customNode";
-// import movableNode from './movableNode';
+import customNode from './customNode';
+import movableNode from './movableNode';
 
-import data from './movableNode';
+import data from './movableData';
 import '../index.less';
+
+const SilentConfig = {
+  stopScrollGraph: true,
+  stopMoveGraph: true,
+};
 
 export default class Example extends React.Component {
   private container: HTMLDivElement;
@@ -14,12 +19,13 @@ export default class Example extends React.Component {
     const lf = new LogicFlow({
       container: this.container,
       grid: true,
-      stopMoveGraph: true,
+      ...SilentConfig,
     });
 
-    // lf.register(customNode);
-    // lf.register(movableNode);
+    lf.register(customNode);
+    lf.register(movableNode);
 
+    // TODO
     // lf.graphModel.addNodeMoveRules((model, deltaX, deltaY) => {
     //   if (model.isGroup && model.children) {
     //     // 如果移动的是分组，那么分组的子节点也跟着移动。
