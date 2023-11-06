@@ -2,7 +2,13 @@ import React from 'react';
 import LogicFlow from '@logicflow/core';
 import '@logicflow/core/es/index.css';
 
-import data from './data';
+import CustomCircle from './customCircle';
+import CustomEllipse from './customEllipse';
+import CustomPolygon from './customPolygon';
+import CustomDiamond from './customDiamond';
+import CustomRect from './customRect';
+
+import data from './customData';
 import '../index.less';
 
 const SilentConfig = {
@@ -22,6 +28,12 @@ export default class Example extends React.Component {
       grid: true,
       ...SilentConfig,
     });
+
+    lf.register(CustomCircle);
+    lf.register(CustomEllipse);
+    lf.register(CustomPolygon);
+    lf.register(CustomDiamond);
+    lf.register(CustomRect);
 
     lf.render(data);
   }

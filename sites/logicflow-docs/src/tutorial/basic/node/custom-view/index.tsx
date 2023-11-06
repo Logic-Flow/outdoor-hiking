@@ -1,16 +1,15 @@
 import React from 'react';
 import LogicFlow from '@logicflow/core';
 import '@logicflow/core/es/index.css';
+import UserTask from './userTask';
 
-import data from './data';
+import data from './viewData';
 import '../index.less';
 
 const SilentConfig = {
-  isSilentMode: true,
   stopScrollGraph: true,
   stopMoveGraph: true,
   stopZoomGraph: true,
-  adjustNodePosition: true,
 };
 
 export default class Example extends React.Component {
@@ -23,7 +22,16 @@ export default class Example extends React.Component {
       ...SilentConfig,
     });
 
+    lf.register(UserTask);
+
     lf.render(data);
+
+    lf.on('node:click', ({ data }) => {
+      lf.setProperties(data.id, {
+        disabled: !data.properties.disabled,
+        scale: 1.5,
+      });
+    });
   }
 
   refContainer = (container: HTMLDivElement) => {

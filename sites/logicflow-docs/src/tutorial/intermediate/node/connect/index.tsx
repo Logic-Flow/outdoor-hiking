@@ -1,16 +1,15 @@
 import React from 'react';
 import LogicFlow from '@logicflow/core';
 import '@logicflow/core/es/index.css';
+import CustomHexagon from './customHexagon';
 
-import data from './data';
-import '../index.less';
+import data from './connectData';
+import './index.less';
 
 const SilentConfig = {
-  isSilentMode: true,
   stopScrollGraph: true,
   stopMoveGraph: true,
   stopZoomGraph: true,
-  adjustNodePosition: true,
 };
 
 export default class Example extends React.Component {
@@ -21,6 +20,17 @@ export default class Example extends React.Component {
       container: this.container,
       grid: true,
       ...SilentConfig,
+    });
+
+    lf.register(CustomHexagon);
+
+    lf.setTheme({
+      nodeText: {
+        color: '#000000',
+        overflowMode: 'ellipsis',
+        lineHeight: 1.2,
+        fontSize: 12,
+      },
     });
 
     lf.render(data);

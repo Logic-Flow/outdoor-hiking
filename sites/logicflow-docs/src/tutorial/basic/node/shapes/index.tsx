@@ -2,7 +2,7 @@ import React from 'react';
 import LogicFlow from '@logicflow/core';
 import '@logicflow/core/es/index.css';
 
-import data from './data';
+import data from './shapesData';
 import '../index.less';
 
 const SilentConfig = {
