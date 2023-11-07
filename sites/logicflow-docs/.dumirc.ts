@@ -16,7 +16,7 @@ export default defineConfig({
         { title: '文档', link: '/tutorial' },
         { title: 'API', link: '/api' },
         { title: '示例', link: '/examples' },
-        { title: '文章', link: '/article' },
+        { title: '文章', link: '/article/article01' },
       ],
       'en-US': [
         { title: 'Tutorial', link: '/en-US/tutorial/about' },
@@ -28,7 +28,6 @@ export default defineConfig({
     socialLinks: {
       github: repository,
     },
-    nprogress: true,
   },
   locales: [
     { id: 'zh-CN', name: '中文' },
