@@ -53,7 +53,7 @@ lf.on('connection:not-allowed', (msg) => {
 
 在节点model中，有个state属性，当节点连接规则校验不通过时，state属性值为5。我们可以通过这个属性来实现连线是节点的提示效果。
 
-<code id="node-connect" src="../../src/tutorial/intermediate/node/connect/index"></code>
+<code id="node-connect" src="../../src/tutorial/intermediate/node/connect"></code>
 
 ## 移动
 
@@ -82,13 +82,13 @@ lf.graphModel.addNodeMoveRules((model, deltaX, deltaY) => {
 });
 ```
 
-<code id="node-movable" src="../../src/tutorial/intermediate/node/movable/index"></code>
+<code id="node-movable" src="../../src/tutorial/intermediate/node/movable"></code>
 
 ## 锚点
 
 对于各种基础类型节点，我们都内置了默认锚点。LogicFlow支持通过重写获取锚点的方法来实现自定义节点的锚点。
 
-<code id="node-sql" src="../../src/tutorial/intermediate/node/sql/index"></code>
+<code id="node-sql" src="../../src/tutorial/intermediate/node/sql"></code>
 
 上面的示例中，我们自定义锚点的时候，不仅可以定义锚点的数量和位置，还可以给锚点加上任意属性。有了这些属性，我们可以再做很多额外的事情。例如，我们增加一个校验规则，只允许节点从右边连出，从左边连入；或者加个id, 在获取数据的时候保存当前连线从那个锚点连接到那个锚点。
 
@@ -121,58 +121,9 @@ class CustomNodeModel extends RectNodeModel {
 
 LogicFlow内置了基础的HTML节点和其他基础节点不一样，我们可以利用LogicFlow的自定义机制，实现各种形态的HTML节点，而且HTML节点内部可以使用任意框架进行渲染。
 
-```jsx | pure
-class UmlModel extends HtmlNodeModel {
-  setAttributes() {
-    this.text.editable = false; // 禁止节点文本编辑
-    // 设置节点宽高和锚点
-    const width = 200;
-    const height = 130;
-    this.width = width;
-    this.height = height;
-    this.anchorsOffset = [
-      [width / 2, 0],
-      [0, height / 2],
-      [-width / 2, 0],
-      [0, -height/2],
-    ]
-  }
-}
-class UmlNode extends HtmlNode {
-  currentProperties: string;
-  setHtml(rootEl: HTMLElement) {
-    const { properties } = this.props.model;
+下面是HTML节点的示例👇
 
-    const el = document.createElement('div');
-    el.className = 'uml-wrapper';
-    const html = `
-      <div>
-        <div class="uml-head">Head</div>
-        <div class="uml-body">
-          <div>+ ${properties.name}</div>
-          <div>+ ${properties.body}</div>
-        </div>
-        <div class="uml-footer">
-          <div>+ setHead(Head $head)</div>
-          <div>+ setBody(Body $body)</div>
-        </div>
-      </div>
-    `
-    el.innerHTML = html;
-    // 需要先把之前渲染的子节点清除掉。
-    rootEl.innerHTML = '';
-    rootEl.appendChild(el);
-  }
-}
-```
-HTML节点示例
-
-<iframe src="https://codesandbox.io/embed/logicflow-step7-dpmgb?fontsize=14&hidenavigation=1&module=%2Fstep7%2FcustomNode.js&theme=dark&view=preview"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="logicflow-step7"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+<code id="node-html-node" src="../../src/tutorial/intermediate/node/htmlNode/index"></code>
 
 ## React 节点
 

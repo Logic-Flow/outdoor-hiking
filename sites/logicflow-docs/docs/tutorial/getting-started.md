@@ -72,7 +72,7 @@ const lf = new LogicFlow({
 
 LogicFlow 支持 JSON 格式数据，该对象中 `nodes` 代表节点数据，`edges` 代表边数据。现在请看一个简单例子👇
 
-<code id="helloworld" src="../../src/tutorial/getting-started/helloworld/index.tsx"></code>
+<code id="helloworld" src="../../src/tutorial/getting-started/helloworld"></code>
 
 LogicFlow 本身是以 umd 打包为纯 JS 的包，所以不论是 vue 还是 react 中都可以使用。这里需要注意一点，那就是初始化 LogicFlow 实例的时候，传入的参数 container，必须要 dom 上存在这个节点，不然会报错请检查 container 参数是否有效。
 
@@ -99,7 +99,7 @@ LogicFlow.use(Control);
 
 #### >> 示例 TODO
 
-<code id="use-plugin" src="../../src/tutorial/getting-started/use-plugin/index.tsx"></code>
+<code id="use-plugin" src="../../src/tutorial/getting-started/use-plugin"></code>
 
 ### 5. 数据转换
 

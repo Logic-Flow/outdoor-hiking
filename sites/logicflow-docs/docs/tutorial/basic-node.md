@@ -3,7 +3,7 @@ nav: 指南
 group:
   title: 基础
   order: 1
-title: 节点
+title: 节点 Node
 order: 1
 ---
 
@@ -23,7 +23,7 @@ LogicFlow是基于svg做的流程图编辑框架，所以我们的节点和连�
 1. 文本 --- [text](https://developer.mozilla.org/zh-CN/docs/Web/SVG/Element/text)
 1. HTML -- `html`
 
-<code id="node-shapes" src="../../src/tutorial/basic/node/shapes/index.tsx"></code>
+<code id="node-shapes" src="../../src/tutorial/basic/node/shapes"></code>
 
 LogicFlow的基础节点是比较简单的，但是在业务中对节点外观要求可能有各种情况。LogicFlow提供了非常强大的自定义节点功能，可以支持开发者自定义各种节点。下面是基于继承的自定义节点介绍。
 
@@ -43,7 +43,7 @@ LogicFlow推荐在实际应用场景中，所有的节点都使用自定义节�
 
 这是一个基于内置节点的自定义节点例子👇，节点自定义采用了不同的方式实现😊
 
-<code id="node-custom" src="../../src/tutorial/basic/node/custom/index.tsx"></code>
+<code id="node-custom" src="../../src/tutorial/basic/node/custom"></code>
 
 :::info{title=提示}
 
@@ -137,7 +137,7 @@ LogicFlow在自定义节点的`model`时,可以定义节点的基础形状、样
 
 下面这个例子就是关于节点`view`的设置，多次点击`节点1`试试呢～
 
-<code id="node-custom-view" src="../../src/tutorial/basic/node/custom-view/index.tsx"></code>
+<code id="node-custom-view" src="../../src/tutorial/basic/node/custom-view"></code>
 
 这里对于`Shape`的返回用到了`h函数`，`h`方法是LogicFlow对外暴露的渲染函数，其用法与`react`、`vue`的[createElement](https://cn.vuejs.org/v2/guide/render-function.html#createElement-%E5%8F%82%E6%95%B0)一致。但是这里我们需要创建的是`svg`标签，所以需要有一定的svg基础知识。
 
