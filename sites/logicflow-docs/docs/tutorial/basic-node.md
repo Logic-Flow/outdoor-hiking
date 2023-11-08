@@ -61,13 +61,13 @@ class CustomNode extends RectResize.view {}
 
 ### 自定义节点`model`
 
-LogicFlow把自定义节点外观分为了`自定义节点样式属性`和`自定义节点形状属性`两种方式。更多详细定义方法，请查看[NodeModelApi](TODO)。
+LogicFlow把自定义节点外观分为了`自定义节点样式属性`和`自定义节点形状属性`两种方式。更多详细定义方法，请查看[NodeModelApi](/api/node-model-api)。
 
 1.  #### 样式属性
 
-在LogicFlow中，外观属性表示控制着节点`边框`、`颜色`这类偏外观的属性。这些属性是可以直接通过[主题配置](TODO)来控制。自定义节点样式可以看做在主题的基础上基于当前节点的类型进行再次定义。
+在LogicFlow中，外观属性表示控制着节点`边框`、`颜色`这类偏外观的属性。这些属性是可以直接通过[主题配置](/api/theme-api)来控制。自定义节点样式可以看做在主题的基础上基于当前节点的类型进行再次定义。
 
-例如：在主题中对所有`rect`节点都定义其边框颜色为红色`stroke: red`，那么可以在自定义节点`UserTask`的时候，重新定义`UserTask`边框为蓝色`stroke: blue`。更细粒度的节点样式控制方法，详情见[API 样式属性](TODO)。
+例如：在主题中对所有`rect`节点都定义其边框颜色为红色`stroke: red`，那么可以在自定义节点`UserTask`的时候，重新定义`UserTask`边框为蓝色`stroke: blue`。更细粒度的节点样式控制方法，详情见[API 样式属性](/api/node-model-api#样式属性)。
 
 ```jsx | pure
 class UserTaskModel extends RectNodeModel {
