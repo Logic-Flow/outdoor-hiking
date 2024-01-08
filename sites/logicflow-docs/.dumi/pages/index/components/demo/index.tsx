@@ -303,7 +303,12 @@ const styleConfig: Partial<LogicFlow.Options> = {
 export default class Example extends React.Component {
   private container!: HTMLDivElement;
   lf!: LogicFlow;
-  start!: Boolean;
+  state = {
+    start: false,
+    isActiveLeft: false,
+    isActiveRight: false,
+  };
+  isEnglish = window.location.href.includes('en');
 
   componentDidMount() {
     const lf = new LogicFlow({
@@ -415,19 +420,27 @@ export default class Example extends React.Component {
   };
 
   handleAnimation = (type: string) => {
-    if (this.start) return;
+    if (this.state.start) return;
     if (type === '1') {
+      this.setState({ isActiveLeft: true });
+      this.setState({ isActiveRight: false });
       this.edgeAnimation();
       setTimeout(() => {
-        this.start = false;
+        this.setState({ start: false });
+        this.setState({ isActiveLeft: false });
+        this.setState({ isActiveRight: false });
       }, 2000);
     } else {
+      this.setState({ isActiveLeft: false });
+      this.setState({ isActiveRight: true });
       this.edgeAnimationSingle();
       setTimeout(() => {
-        this.start = false;
-      }, 5000);
+        this.setState({ start: false });
+        this.setState({ isActiveLeft: false });
+        this.setState({ isActiveRight: false });
+      }, 5500);
     }
-    this.start = true;
+    this.setState({ start: true });
   };
 
   stopEdgeAnimation = () => {
@@ -455,8 +468,24 @@ export default class Example extends React.Component {
       <div className="helloworld-app demo">
         <div className="app-content" ref={this.refContainer} />
         <div className="run-btn">
-          <span onClick={() => this.handleAnimation('1')}>Mode 1</span>
-          <span onClick={() => this.handleAnimation('2')}>Mode 2</span>
+          <button
+            disabled={this.state.start}
+            className={`${this.state.start ? 'is-disabled' : ''} ${
+              this.state.isActiveLeft ? 'active' : ''
+            }`}
+            onClick={() => this.handleAnimation('1')}
+          >
+            {this.isEnglish ? 'parallel' : '并行'}
+          </button>
+          <button
+            disabled={this.state.start}
+            className={`${this.state.start ? 'is-disabled' : ''} ${
+              this.state.isActiveRight ? 'active' : ''
+            }`}
+            onClick={() => this.handleAnimation('2')}
+          >
+            {this.isEnglish ? 'serial' : '串行'}
+          </button>
           {/* <span onClick={this.stopEdgeAnimation}>stop</span> */}
         </div>
       </div>
