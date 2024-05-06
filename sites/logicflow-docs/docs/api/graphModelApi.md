@@ -905,7 +905,7 @@ graphModel.setDefaultEdgeType("bezier");
 
 | 名称 | 类型   | 必传 | 默认值 | 描述     |
 | :--- | :----- | :--- | :----- | :------- |
-| id   | string | ✅ | 无     | 节点     |
+| id   | string | ✅ | 无     | 节点 id  |
 | type | string | ✅ | 无     | 节点类型 |
 
 ```jsx | pure
@@ -914,13 +914,13 @@ graphModel.changeNodeType("node_1", "circle");
 
 ### changeEdgeType<Badge>方法</Badge>
 
-修改指定节点的类型
+修改指定边的类型
 
 参数
 
 | 名称 | 类型   | 必传 | 默认值 | 描述   |
 | :--- | :----- | :--- | :----- | :----- |
-| id   | string | ✅ | 无     | 节点   |
+| id   | string | ✅ | 无     | 边 id  |
 | type | string | ✅ | 无     | 边类型 |
 
 ```jsx | pure
