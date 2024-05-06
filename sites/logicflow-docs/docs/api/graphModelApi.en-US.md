@@ -837,7 +837,7 @@ Parameters
 
 |  Name | Type | Mandatory | Default | Description  |
 | :--- | :----- | :--- | :----- | :----- |
-| type | string | ✅ | None     | 边类型 |
+| type | string | ✅ | None     | Edge Type |
 
 ```jsx | pure
 graphModel.setDefaultEdgeType("bezier");
@@ -849,7 +849,7 @@ Parameters
 
 |  Name | Type | Mandatory | Default | Description    |
 | :--- | :----- | :--- | :----- | :------- |
-| id   | string | ✅ | None    | Node     |
+| id   | string | ✅ | None    | node id     |
 | type | string | ✅ | None     | Node Type |
 
 ```jsx | pure
@@ -862,7 +862,7 @@ Parameters
 
 | Name | Type | Mandatory | Default | Description |
 | :--- | :----- | :--- | :----- | :----- |
-| id   | string | ✅ | None     | Node   |
+| id   | string | ✅ | None     | edge id   |
 | type | string | ✅ | None     | Edge Type |
 
 ```jsx | pure
